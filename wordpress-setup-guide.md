@@ -1,0 +1,167 @@
+# WordPress CMS Integration Guide for Reel N Real
+
+## Overview
+This guide explains how to set up WordPress as a headless CMS for reelnreal.com while keeping Netlify hosting and your domain unchanged.
+
+---
+
+## Phase 1: WordPress Setup (One-time)
+
+### 1.1 Choose WordPress Hosting
+**Recommended: Bluehost** ($2.95-6/month)
+- Go to: https://www.bluehost.com/wordpress
+- Click "Get Started Now"
+- Select plan (basic is fine for CMS use)
+- Complete checkout
+
+### 1.2 WordPress Installation
+- Bluehost will install WordPress automatically
+- You'll get:
+  - WordPress URL: `your-domain-wp.com` or similar (temporary)
+  - Admin URL: `/wp-admin`
+  - Default credentials via email
+
+### 1.3 Login & Initial Setup
+1. Go to `your-wp-site.com/wp-admin`
+2. Login with provided credentials
+3. Install plugins:
+   - **WP REST API** (usually built-in)
+   - **Enable REST API** if needed
+   - **CORS Headers** plugin (for Netlify to access API)
+
+---
+
+## Phase 2: Create Custom Post Types
+
+### 2.1 Install Code Snippets Plugin
+1. Go to **Plugins** → **Add New**
+2. Search: "Code Snippets"
+3. Install & Activate
+
+### 2.2 Create Movie Post Type
+Go to **Snippets** → **Add New** → Paste this code:
+
+```php
+<?php
+// Register Movie Post Type
+add_action('init', function() {
+    register_post_type('movie', [
+        'label' => 'Movies',
+        'public' => true,
+        'supports' => ['title', 'editor', 'custom-fields'],
+        'show_in_rest' => true,
+        'rest_base' => 'movies',
+    ]);
+    
+    register_post_type('news', [
+        'label' => 'News',
+        'public' => true,
+        'supports' => ['title', 'editor', 'custom-fields'],
+        'show_in_rest' => true,
+        'rest_base' => 'news',
+    ]);
+    
+    register_post_type('boxoffice', [
+        'label' => 'Box Office',
+        'public' => true,
+        'supports' => ['title', 'editor', 'custom-fields'],
+        'show_in_rest' => true,
+        'rest_base' => 'boxoffice',
+    ]);
+});
+```
+
+### 2.3 Add Custom Fields
+For each post type, add these ACF (Advanced Custom Fields) or custom fields:
+- **Movies**: title, genre, rating, cast, director, collections, image_url, status, language (Telugu/English)
+- **News**: headline, category, summary, time, language
+- **Box Office**: title, total, status, url
+
+---
+
+## Phase 3: Netlify Integration
+
+### 3.1 Update API Endpoints
+Replace your `site-content.json` fetch with WordPress API calls.
+
+### 3.2 API URLs (Once WordPress is live)
+```
+Movies:      https://your-wp-site.com/wp-json/wp/v2/movies
+News:        https://your-wp-site.com/wp-json/wp/v2/news
+Box Office:  https://your-wp-site.com/wp-json/wp/v2/boxoffice
+```
+
+---
+
+## Phase 4: Domain Configuration
+
+### 4.1 Update DNS Records
+1. Go to your domain registrar (where you bought reelnreal.com)
+2. Update DNS to point to Netlify:
+   - CNAME: `reelnreal.com` → `your-netlify-site.netlify.app`
+3. Verify DNS propagation (may take 24-48 hours)
+
+### 4.2 Keep WordPress on Subdomain
+- WordPress stays on: `wp.reelnreal.com` or `admin.reelnreal.com`
+- Main site stays on: `reelnreal.com` (Netlify)
+
+---
+
+## Phase 5: Mobile Updates
+
+### 5.1 Install WordPress App
+- **iOS**: Download "WordPress" app from App Store
+- **Android**: Download "WordPress" from Play Store
+
+### 5.2 Login & Start Editing
+1. Open WordPress app
+2. Login with your WordPress credentials
+3. Create/edit posts on the go
+4. Changes appear on reelnreal.com automatically
+
+---
+
+## API Response Examples
+
+### Movies API Response:
+```json
+{
+  "id": 1,
+  "title": "Peddi",
+  "content": "A new mass action film...",
+  "acf": {
+    "genre": "Mass action",
+    "rating": "8.2/10",
+    "cast": "Ram Charan, Sreeleela",
+    "director": "Buchi Babu",
+    "collections": "₹ 308 Cr worldwide",
+    "image_url": "...",
+    "status": "Now playing"
+  }
+}
+```
+
+---
+
+## Troubleshooting
+
+### CORS Errors?
+- Install "WP CORS" plugin
+- Enable REST API access
+
+### API Not Working?
+- Check WordPress **Settings** → **Permalinks** (select anything except "Plain")
+- Regenerate .htaccess file
+
+### Changes Not Showing on Netlify?
+- Netlify has caching; deploy new version after WordPress updates
+- Or implement webhook to trigger automatic Netlify builds
+
+---
+
+## Next Steps (See Code Files)
+1. Review `wordpress-api-config.js` for API setup
+2. Check `content-fetcher.js` for fetching logic
+3. Update `index.html` to use new API
+4. Test locally before deploying
+
