@@ -1,0 +1,8 @@
+{
+  "name": "GitHub Website Optimizer",
+  "description": "An application environment for importing, optimizing performance, and fixing UI bugs for GitHub web projects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
