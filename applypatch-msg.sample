@@ -1,156 +1,148 @@
-import React, { useState } from 'react';
-import { History, Award, Calendar, User, Film, Sparkles, Star } from 'lucide-react';
-import { FilmHistoryItem, Language } from '../types';
+import React from 'react';
+import { TrendingUp, Flame, Award, DollarSign, ArrowUpRight, BarChart3, AlertCircle } from 'lucide-react';
+import { BoxOfficeItem, Language } from '../types';
 
-interface TeluguHistorySectionProps {
-  historyItems: FilmHistoryItem[];
+interface BoxOfficeSectionProps {
+  items: BoxOfficeItem[];
+  top5: { rank: number; title: string; collections: string; trend: string }[];
+  updates: { title: string; tag: string; summary: string }[];
   language: Language;
-  onSelectMovie: (item: any) => void;
 }
 
-export const TeluguHistorySection: React.FC<TeluguHistorySectionProps> = ({
-  historyItems,
+export const BoxOfficeSection: React.FC<BoxOfficeSectionProps> = ({
+  items,
+  top5,
+  updates,
   language,
-  onSelectMovie,
 }) => {
   const isTe = language === 'te';
-  const [selectedDecade, setSelectedDecade] = useState<string>('all');
-
-  const decades = [
-    { id: 'all', label: isTe ? 'అన్ని యుగాలు' : 'All Decades' },
-    { id: '1960s', label: '1950s - 1970s' },
-    { id: '1980s', label: '1980s - 1990s' },
-    { id: '2000s', label: '2000s - 2010s' },
-    { id: '2020s', label: '2020s+' },
-  ];
-
-  const filteredItems = historyItems.filter((item) => {
-    if (selectedDecade === 'all') return true;
-    const year = item.year || parseInt(item.release) || 2000;
-    if (selectedDecade === '1960s') return year < 1980;
-    if (selectedDecade === '1980s') return year >= 1980 && year < 2000;
-    if (selectedDecade === '2000s') return year >= 2000 && year < 2020;
-    if (selectedDecade === '2020s') return year >= 2020;
-    return true;
-  });
 
   return (
     <div className="space-y-8 animate-fade-in">
       
-      {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/60 via-zinc-900 to-zinc-950 p-6 sm:p-8 border border-amber-500/30 shadow-2xl">
+      {/* Header Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 p-6 sm:p-8 border border-amber-500/20 shadow-2xl">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 blur-3xl rounded-full pointer-events-none" />
+        
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black uppercase tracking-widest mb-3 border border-amber-500/30">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            {isTe ? 'తెలుగు సినీ వైభవం' : 'Golden Legacy of Tollywood'}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black uppercase tracking-widest mb-3">
+            <Flame className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+            {isTe ? 'లైవ్ ట్రేడ్ రిపోర్ట్' : 'Real-Time Box Office Tracker'}
           </div>
 
-          <h2 className="font-serif-display text-2xl sm:text-4xl font-extrabold text-white">
-            {isTe ? 'తెలుగు సినీ చరిత్ర మైలురాళ్లు' : 'Landmarks of Telugu Cinema History'}
+          <h2 className="font-serif-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            {isTe ? 'బాక్స్ ఆఫీస్ విశ్లేషణ & వసూళ్లు' : 'Official Trade Analytics & Collections'}
           </h2>
 
           <p className="text-zinc-400 text-xs sm:text-sm mt-2 leading-relaxed">
             {isTe
-              ? '1950ల నుంచి నేటి గ్లోబల్ ఆస్కార్ విరామం వరకు తెలుగు సినిమాను ప్రపంచ వేదికపై నిలిపిన క్లాసిక్స్.'
-              : 'From 1950s mythological masterpieces to modern Oscar-winning global cinema, explore iconic films that redefined Indian cinema.'}
+              ? 'ఆంధ్రప్రదేశ్, తెలంగాణ మరియు ప్రపంచవ్యాప్త మార్కెట్లలో సినిమాల నిజ-సమయ కలెక్షన్ల లెక్కలు.'
+              : 'Verified theatre collections, pre-sales tracking, and breakeven milestones across Nizam, Ceeded, AP & Overseas.'}
           </p>
         </div>
       </div>
 
-      {/* Decade Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-2">
-        {decades.map((dec) => (
-          <button
-            key={dec.id}
-            onClick={() => setSelectedDecade(dec.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
-              selectedDecade === dec.id
-                ? 'bg-amber-500 text-zinc-950 border-amber-400 shadow-lg shadow-amber-500/20'
-                : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
-            }`}
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {items.map((item, idx) => (
+          <div
+            key={item.id || idx}
+            className="group relative bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 hover:border-amber-500/50 transition-all duration-300 shadow-lg flex flex-col justify-between"
           >
-            {dec.label}
-          </button>
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <span className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  {item.tag || 'Trade'}
+                </span>
+                <span className="text-[11px] font-extrabold text-emerald-400 flex items-center gap-1">
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  {item.status}
+                </span>
+              </div>
+
+              <h4 className="text-xs uppercase tracking-wider text-zinc-400 font-bold line-clamp-1">
+                {isTe && item.title_te ? item.title_te : item.title}
+              </h4>
+
+              <div className="mt-2 text-xl sm:text-2xl font-black text-white gold-gradient-text">
+                {item.total}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-400">
+              <span>{isTe ? 'AP/TS షేర్' : 'AP/TS'}: {item.apTsCollection || '₹ 58.4 Cr'}</span>
+              <span>{isTe ? 'వరల్డ్‌వైడ్' : 'WW'}: {item.wwCollection || '₹ 112 Cr'}</span>
+            </div>
+          </div>
         ))}
       </div>
 
-      {/* History Timeline Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item, idx) => {
-          const title = isTe && item.title_te ? item.title_te : item.title;
-          const genre = isTe && item.genre_te ? item.genre_te : item.genre;
-          const description = isTe && item.description_te ? item.description_te : item.description;
-          const collections = isTe && item.collections_te ? item.collections_te : item.collections;
-
-          return (
-            <div
-              key={idx}
-              onClick={() => onSelectMovie({ ...item, category: 'Telugu History' })}
-              className="group bg-zinc-900/80 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between"
-            >
-              {/* Media Image Banner */}
-              <div className="relative aspect-[16/9] w-full bg-zinc-950 overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=1200&q=80';
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
-
-                {/* Release Year Tag */}
-                <div className="absolute top-3 left-3 bg-zinc-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 text-amber-400 font-black text-xs">
-                  {item.year || item.release}
-                </div>
-
-                {/* Rating Badge */}
-                {item.rating && (
-                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-zinc-950/80 backdrop-blur-md px-2.5 py-1 rounded-md text-amber-400 font-extrabold text-xs border border-zinc-800">
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
-                    <span>{item.rating}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Body Content */}
-              <div className="p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-serif-display text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
-                    {title}
-                  </h3>
-                  <p className="text-xs text-amber-400 font-semibold mt-0.5">{genre}</p>
-
-                  <div className="space-y-1.5 mt-3 text-xs text-zinc-400">
-                    <div className="flex items-center gap-2">
-                      <User className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                      <span className="truncate">{item.cast}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Award className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                      <span className="truncate">{item.director}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-zinc-400 mt-3 line-clamp-3 leading-relaxed">
-                    {description}
-                  </p>
-                </div>
-
-                {/* Footer Milestone */}
-                <div className="mt-4 pt-3 border-t border-zinc-800 flex items-center justify-between text-xs">
-                  <span className="text-emerald-400 font-black text-[11px] uppercase tracking-wider">
-                    {collections}
-                  </span>
-                  <span className="text-zinc-500 text-[11px] group-hover:text-amber-400 transition-colors font-bold">
-                    {isTe ? 'వివరాలు చూడు' : 'Explore'} →
-                  </span>
-                </div>
-              </div>
+      {/* Top 5 Leaderboard & Trade Updates */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Top 5 Box Office Leaderboard */}
+        <div className="lg:col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
+            <div className="flex items-center gap-2">
+              <Award className="w-5 h-5 text-amber-500" />
+              <h3 className="font-serif-display text-lg font-bold text-white">
+                {isTe ? 'టాప్ 5 సినిమాల కలెక్షన్లు' : 'Current Top 5 Box Office Chart'}
+              </h3>
             </div>
-          );
-        })}
+            <span className="text-xs text-zinc-500 font-semibold">{isTe ? 'ఈ వారం' : 'This Week'}</span>
+          </div>
+
+          <div className="space-y-3">
+            {top5.map((row) => (
+              <div
+                key={row.rank}
+                className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/40 transition-colors"
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm ${
+                    row.rank === 1 ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/30' :
+                    row.rank === 2 ? 'bg-zinc-700 text-zinc-200' :
+                    row.rank === 3 ? 'bg-amber-900/60 text-amber-300' : 'bg-zinc-800 text-zinc-400'
+                  }`}>
+                    #{row.rank}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-zinc-100">{row.title}</h4>
+                    <span className="text-xs text-zinc-500 font-medium">{row.trend}</span>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="font-black text-sm text-amber-400 block">{row.collections}</span>
+                  <span className="text-[10px] text-emerald-400 font-semibold">{isTe ? 'అధిక డిమాండ్' : 'High Traffic'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Trade Analysis & Updates */}
+        <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl">
+          <div className="flex items-center gap-2 border-b border-zinc-800 pb-4 mb-4">
+            <BarChart3 className="w-5 h-5 text-amber-500" />
+            <h3 className="font-serif-display text-lg font-bold text-white">
+              {isTe ? 'ట్రేడ్ విశ్లేషణ' : 'Trade Insights'}
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {updates.map((up, idx) => (
+              <div key={idx} className="p-4 rounded-xl bg-zinc-950/50 border border-zinc-800/80">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400">
+                  {up.tag}
+                </span>
+                <h4 className="font-bold text-xs text-zinc-100 mt-2">{up.title}</h4>
+                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">{up.summary}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

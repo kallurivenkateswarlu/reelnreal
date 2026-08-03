@@ -1,108 +1,148 @@
-import React from 'react';
-import { Bookmark, Trash2, Film, Newspaper } from 'lucide-react';
-import { Movie, NewsItem, Language } from '../types';
+import React, { useState } from 'react';
+import { Newspaper, Share2, Clock, Bookmark, BookmarkCheck, Tag, ExternalLink } from 'lucide-react';
+import { NewsItem, Language } from '../types';
 
-interface BookmarksSectionProps {
-  bookmarks: any[];
+interface NewsSectionProps {
+  politicalNews: NewsItem[];
+  localNews: NewsItem[];
   language: Language;
-  onRemoveBookmark: (item: any) => void;
-  onSelectMovie: (movie: Movie) => void;
-  onClearAll: () => void;
+  onToggleBookmark: (item: any) => void;
+  isBookmarked: (id: any) => boolean;
 }
 
-export const BookmarksSection: React.FC<BookmarksSectionProps> = ({
-  bookmarks,
+export const NewsSection: React.FC<NewsSectionProps> = ({
+  politicalNews,
+  localNews,
   language,
-  onRemoveBookmark,
-  onSelectMovie,
-  onClearAll,
+  onToggleBookmark,
+  isBookmarked,
 }) => {
   const isTe = language === 'te';
+  const [filter, setFilter] = useState<'all' | 'political' | 'local'>('all');
 
-  if (bookmarks.length === 0) {
-    return (
-      <div className="bg-zinc-900/80 border border-zinc-800 rounded-3xl p-12 text-center max-w-xl mx-auto my-12 shadow-xl animate-fade-in">
-        <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mx-auto text-amber-500 mb-4">
-          <Bookmark className="w-8 h-8" />
-        </div>
-        <h3 className="font-serif-display text-2xl font-extrabold text-white">
-          {isTe ? 'సేవ్ చేసిన అంశాలు లేవు' : 'No Bookmarks Saved Yet'}
-        </h3>
-        <p className="text-zinc-400 text-xs sm:text-sm mt-2">
-          {isTe
-            ? 'సినిమాలు లేదా వార్తలపై సేవ్ బటన్ క్లిక్ చేసి ఇక్కడ భద్రపరుచుకోండి.'
-            : 'Click the bookmark icon on any movie card or news article to save it for quick access later.'}
-        </p>
-      </div>
-    );
-  }
+  const allItems = [
+    ...politicalNews.map(n => ({ ...n, section: 'Political' })),
+    ...localNews.map(n => ({ ...n, section: 'Local' }))
+  ];
+
+  const filteredItems = filter === 'all'
+    ? allItems
+    : filter === 'political'
+      ? politicalNews.map(n => ({ ...n, section: 'Political' }))
+      : localNews.map(n => ({ ...n, section: 'Local' }));
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
-        <div className="flex items-center gap-2">
-          <Bookmark className="w-5 h-5 text-amber-500" />
-          <h2 className="font-serif-display text-2xl font-extrabold text-white">
-            {isTe ? 'సేవ్ చేసిన అంశాలు' : 'Saved Bookmarks'} ({bookmarks.length})
-          </h2>
+      
+      {/* Header & Filter Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Newspaper className="w-5 h-5 text-amber-500" />
+            <h2 className="font-serif-display text-2xl font-extrabold text-white">
+              {isTe ? 'వార్తల సమాచారం' : 'News Hub & Updates'}
+            </h2>
+          </div>
+          <p className="text-xs text-zinc-400">
+            {isTe ? 'తాజా రాజకీయ, జాతీయ మరియు ప్రాంతీయ వినోద వార్తలు' : 'Verified political, national, and local entertainment news updates'}
+          </p>
         </div>
 
-        <button
-          onClick={onClearAll}
-          className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 font-bold bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-lg border border-red-500/20 transition-all"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          <span>{isTe ? 'అన్నీ తీసివేయి' : 'Clear All'}</span>
-        </button>
+        {/* Filter Pills */}
+        <div className="flex items-center gap-2 bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs font-semibold">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              filter === 'all' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            {isTe ? 'అన్నీ' : 'All News'}
+          </button>
+          <button
+            onClick={() => setFilter('political')}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              filter === 'political' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            {isTe ? 'రాజకీయాలు' : 'Political'}
+          </button>
+          <button
+            onClick={() => setFilter('local')}
+            className={`px-3 py-1.5 rounded-lg transition-all ${
+              filter === 'local' ? 'bg-amber-500 text-zinc-950 font-bold' : 'text-zinc-400 hover:text-white'
+            }`}
+          >
+            {isTe ? 'ప్రాంతీయ' : 'Local'}
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {bookmarks.map((item, idx) => {
-          const title = isTe && item.title_te ? item.title_te : (item.title || item.headline);
-          const isNews = item.type === 'news';
+      {/* News Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {filteredItems.map((item, idx) => {
+          const headline = isTe && item.headline_te ? item.headline_te : (item.headline || item.title);
+          const summary = isTe && item.summary_te ? item.summary_te : item.summary;
+          const bookmarked = isBookmarked(item.id || headline);
 
           return (
-            <div
-              key={idx}
-              className="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-amber-500/50 transition-all p-5 flex flex-col justify-between"
+            <article
+              key={item.id || idx}
+              className="group bg-zinc-900/70 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-amber-500/50 transition-all duration-300 shadow-lg flex flex-col justify-between"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                    isNews ? 'bg-blue-500/20 text-blue-400' : 'bg-amber-500/20 text-amber-400'
-                  }`}>
-                    {isNews ? 'News' : 'Movie'}
+              {/* Media Image */}
+              {item.image && (
+                <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-950">
+                  <img
+                    src={item.image}
+                    alt={headline}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=800&q=80';
+                    }}
+                  />
+                  <div className="absolute top-3 left-3">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-zinc-950/80 text-amber-400 border border-amber-500/30 backdrop-blur-md">
+                      {item.category || item.section}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* News Body */}
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-xs text-zinc-500 mb-2">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{item.time || '1 hour ago'}</span>
+                    <span>•</span>
+                    <span>{item.readTime || '3 min read'}</span>
+                  </div>
+
+                  <h3 className="font-serif-display text-base sm:text-lg font-bold text-zinc-100 group-hover:text-amber-400 transition-colors line-clamp-2">
+                    {headline}
+                  </h3>
+
+                  <p className="text-xs text-zinc-400 mt-2 line-clamp-3 leading-relaxed">
+                    {summary}
+                  </p>
+                </div>
+
+                {/* News Footer Actions */}
+                <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs">
+                  <span className="text-amber-500 font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                    {isTe ? 'పూర్తి కథనం చదవండి' : 'Read Full Story'}
+                    <ExternalLink className="w-3.5 h-3.5" />
                   </span>
 
                   <button
-                    onClick={() => onRemoveBookmark(item)}
-                    className="p-1 text-zinc-500 hover:text-red-400 transition-colors"
+                    onClick={() => onToggleBookmark({ ...item, type: 'news', title: headline })}
+                    className="p-1.5 rounded-lg bg-zinc-950 text-zinc-400 hover:text-amber-400 transition-colors"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    {bookmarked ? <BookmarkCheck className="w-4 h-4 text-amber-400 fill-amber-400" /> : <Bookmark className="w-4 h-4" />}
                   </button>
                 </div>
-
-                <h3 
-                  onClick={() => !isNews && onSelectMovie(item)}
-                  className={`font-serif-display text-base font-bold text-white line-clamp-2 ${!isNews ? 'cursor-pointer hover:text-amber-400' : ''}`}
-                >
-                  {title}
-                </h3>
-
-                <p className="text-xs text-zinc-400 mt-2 line-clamp-2">
-                  {isTe && item.description_te ? item.description_te : (item.description || item.summary)}
-                </p>
               </div>
-
-              {!isNews && (
-                <button
-                  onClick={() => onSelectMovie(item)}
-                  className="mt-4 w-full py-2 bg-amber-500 text-zinc-950 font-bold rounded-xl text-xs hover:bg-amber-400 transition-colors"
-                >
-                  {isTe ? 'వివరాలు చూడు' : 'View Details'}
-                </button>
-              )}
-            </div>
+            </article>
           );
         })}
       </div>

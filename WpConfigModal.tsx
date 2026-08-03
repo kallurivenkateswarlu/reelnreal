@@ -1,149 +1,220 @@
 import React from 'react';
-import { TrendingUp, Flame, Award, DollarSign, ArrowUpRight, BarChart3, AlertCircle } from 'lucide-react';
-import { BoxOfficeItem, Language } from '../types';
+import { Film, TrendingUp, Newspaper, History, Bookmark, Settings, Search, Globe, Flame } from 'lucide-react';
+import { NavTab, Language, WordPressConfig } from '../types';
 
-interface BoxOfficeSectionProps {
-  items: BoxOfficeItem[];
-  top5: { rank: number; title: string; collections: string; trend: string }[];
-  updates: { title: string; tag: string; summary: string }[];
+interface NavbarProps {
+  activeTab: NavTab;
+  setActiveTab: (tab: NavTab) => void;
   language: Language;
+  setLanguage: (lang: Language) => void;
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  bookmarksCount: number;
+  onOpenSettings: () => void;
+  wpConfig: WordPressConfig;
+  liveTickerText?: string;
 }
 
-export const BoxOfficeSection: React.FC<BoxOfficeSectionProps> = ({
-  items,
-  top5,
-  updates,
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
   language,
+  setLanguage,
+  searchQuery,
+  setSearchQuery,
+  bookmarksCount,
+  onOpenSettings,
+  wpConfig,
+  liveTickerText = "Peddi Worldwide Opening Pre-Sales Cross ₹50 Cr Target • RRR Crosses 1,380 Cr • Pushpa 2 All-time Hit",
 }) => {
   const isTe = language === 'te';
 
+  const navItems = [
+    {
+      id: 'movies' as NavTab,
+      label: isTe ? 'సినిమాలు' : 'Movies',
+      icon: Film,
+    },
+    {
+      id: 'boxoffice' as NavTab,
+      label: isTe ? 'బాక్స్ ఆఫీస్ లైవ్' : 'Box Office Live',
+      icon: TrendingUp,
+      badge: isTe ? 'లైవ్' : 'LIVE',
+    },
+    {
+      id: 'news' as NavTab,
+      label: isTe ? 'వార్తలు' : 'News Hub',
+      icon: Newspaper,
+    },
+    {
+      id: 'history' as NavTab,
+      label: isTe ? 'తెలుగు సినీ చరిత్ర' : 'Film History',
+      icon: History,
+    },
+    {
+      id: 'bookmarks' as NavTab,
+      label: isTe ? 'సేవ్ చేసినవి' : 'Saved',
+      icon: Bookmark,
+      count: bookmarksCount,
+    },
+  ];
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 p-6 sm:p-8 border border-amber-500/20 shadow-2xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 blur-3xl rounded-full pointer-events-none" />
-        
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black uppercase tracking-widest mb-3">
-            <Flame className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-            {isTe ? 'లైవ్ ట్రేడ్ రిపోర్ట్' : 'Real-Time Box Office Tracker'}
+    <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/80 shadow-2xl">
+      {/* Live Ticker Bar */}
+      <div className="bg-amber-500/10 border-b border-amber-500/20 py-1 px-4 text-xs font-medium text-amber-300 flex items-center justify-between overflow-hidden">
+        <div className="flex items-center gap-2 shrink-0 pr-4 bg-zinc-950/40 py-0.5 px-2 rounded font-bold uppercase tracking-wider text-[10px] text-amber-400">
+          <Flame className="w-3.5 h-3.5 animate-pulse text-amber-500" />
+          {isTe ? 'బాక్స్ ఆఫీస్ అప్‌డేట్' : 'BREAKING UPDATE'}
+        </div>
+        <div className="overflow-hidden whitespace-nowrap w-full">
+          <div className="inline-block animate-marquee pl-4">
+            {liveTickerText}
           </div>
-
-          <h2 className="font-serif-display text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-            {isTe ? 'బాక్స్ ఆఫీస్ విశ్లేషణ & వసూళ్లు' : 'Official Trade Analytics & Collections'}
-          </h2>
-
-          <p className="text-zinc-400 text-xs sm:text-sm mt-2 leading-relaxed">
-            {isTe
-              ? 'ఆంధ్రప్రదేశ్, తెలంగాణ మరియు ప్రపంచవ్యాప్త మార్కెట్లలో సినిమాల నిజ-సమయ కలెక్షన్ల లెక్కలు.'
-              : 'Verified theatre collections, pre-sales tracking, and breakeven milestones across Nizam, Ceeded, AP & Overseas.'}
-          </p>
         </div>
       </div>
 
-      {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {items.map((item, idx) => (
-          <div
-            key={item.id || idx}
-            className="group relative bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 hover:border-amber-500/50 transition-all duration-300 shadow-lg flex flex-col justify-between"
+      {/* Main Topbar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex items-center justify-between gap-4">
+          
+          {/* Logo */}
+          <div 
+            onClick={() => setActiveTab('movies')}
+            className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-400 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-200">
+              <Film className="w-6 h-6 text-zinc-950 stroke-[2.5]" />
+            </div>
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                  {item.tag || 'Trade'}
-                </span>
-                <span className="text-[11px] font-extrabold text-emerald-400 flex items-center gap-1">
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                  {item.status}
+              <div className="flex items-center gap-1.5">
+                <span className="font-serif-display text-xl sm:text-2xl font-black tracking-tight text-white group-hover:text-amber-400 transition-colors">
+                  REEL <span className="text-amber-500 font-sans font-extrabold text-sm sm:text-base tracking-widest mx-0.5">N</span> REAL
                 </span>
               </div>
-
-              <h4 className="text-xs uppercase tracking-wider text-zinc-400 font-bold line-clamp-1">
-                {isTe && item.title_te ? item.title_te : item.title}
-              </h4>
-
-              <div className="mt-2 text-xl sm:text-2xl font-black text-white gold-gradient-text">
-                {item.total}
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-400">
-              <span>{isTe ? 'AP/TS షేర్' : 'AP/TS'}: {item.apTsCollection || '₹ 58.4 Cr'}</span>
-              <span>{isTe ? 'వరల్డ్‌వైడ్' : 'WW'}: {item.wwCollection || '₹ 112 Cr'}</span>
+              <p className="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold -mt-1">
+                {isTe ? 'తెలుగు సినీ & వినోద వేదిక' : 'Cinema & Box Office Portal'}
+              </p>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Top 5 Leaderboard & Trade Updates */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Top 5 Box Office Leaderboard */}
-        <div className="lg:col-span-2 bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
-            <div className="flex items-center gap-2">
-              <Award className="w-5 h-5 text-amber-500" />
-              <h3 className="font-serif-display text-lg font-bold text-white">
-                {isTe ? 'టాప్ 5 సినిమాల కలెక్షన్లు' : 'Current Top 5 Box Office Chart'}
-              </h3>
-            </div>
-            <span className="text-xs text-zinc-500 font-semibold">{isTe ? 'ఈ వారం' : 'This Week'}</span>
-          </div>
-
-          <div className="space-y-3">
-            {top5.map((row) => (
-              <div
-                key={row.rank}
-                className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-800/80 hover:border-amber-500/40 transition-colors"
+          {/* Search Bar (Desktop) */}
+          <div className="hidden md:flex flex-1 max-w-md relative mx-4">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={isTe ? 'సినిమా, నటుడు, వార్త శోధించండి...' : 'Search movies, actors, box office...'}
+              className="w-full bg-zinc-900/90 text-sm text-zinc-100 placeholder-zinc-500 rounded-full pl-10 pr-4 py-2 border border-zinc-800 focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/50 transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white bg-zinc-800 rounded-full px-1.5 py-0.5"
               >
-                <div className="flex items-center gap-3.5">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm ${
-                    row.rank === 1 ? 'bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/30' :
-                    row.rank === 2 ? 'bg-zinc-700 text-zinc-200' :
-                    row.rank === 3 ? 'bg-amber-900/60 text-amber-300' : 'bg-zinc-800 text-zinc-400'
-                  }`}>
-                    #{row.rank}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-zinc-100">{row.title}</h4>
-                    <span className="text-xs text-zinc-500 font-medium">{row.trend}</span>
-                  </div>
-                </div>
+                ✕
+              </button>
+            )}
+          </div>
 
-                <div className="text-right">
-                  <span className="font-black text-sm text-amber-400 block">{row.collections}</span>
-                  <span className="text-[10px] text-emerald-400 font-semibold">{isTe ? 'అధిక డిమాండ్' : 'High Traffic'}</span>
-                </div>
-              </div>
-            ))}
+          {/* Controls Right */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            
+            {/* Language Switcher */}
+            <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-1 text-xs font-semibold">
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  language === 'en'
+                    ? 'bg-amber-500 text-zinc-950 font-bold shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLanguage('te')}
+                className={`px-2.5 py-1 rounded-md transition-all font-telugu ${
+                  language === 'te'
+                    ? 'bg-amber-500 text-zinc-950 font-bold shadow-sm'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                తెలుగు
+              </button>
+            </div>
+
+            {/* WordPress CMS Settings Button */}
+            <button
+              onClick={onOpenSettings}
+              title="WordPress CMS Integration Settings"
+              className={`p-2 rounded-lg border transition-all flex items-center gap-1.5 text-xs font-semibold ${
+                wpConfig.contentSource === 'wordpress'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-amber-400 hover:border-zinc-700'
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              <span className="hidden sm:inline">
+                {wpConfig.contentSource === 'wordpress' ? 'WP Active' : 'CMS Sync'}
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* Trade Analysis & Updates */}
-        <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 shadow-xl">
-          <div className="flex items-center gap-2 border-b border-zinc-800 pb-4 mb-4">
-            <BarChart3 className="w-5 h-5 text-amber-500" />
-            <h3 className="font-serif-display text-lg font-bold text-white">
-              {isTe ? 'ట్రేడ్ విశ్లేషణ' : 'Trade Insights'}
-            </h3>
-          </div>
-
-          <div className="space-y-4">
-            {updates.map((up, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-zinc-950/50 border border-zinc-800/80">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400">
-                  {up.tag}
-                </span>
-                <h4 className="font-bold text-xs text-zinc-100 mt-2">{up.title}</h4>
-                <p className="text-xs text-zinc-400 mt-1 leading-relaxed">{up.summary}</p>
-              </div>
-            ))}
-          </div>
+        {/* Mobile Search Bar */}
+        <div className="mt-3 md:hidden relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={isTe ? 'సినిమా, నటుడు, వార్త శోధించండి...' : 'Search movies, box office, news...'}
+            className="w-full bg-zinc-900/90 text-sm text-zinc-100 placeholder-zinc-500 rounded-lg pl-10 pr-4 py-2 border border-zinc-800 focus:outline-none focus:border-amber-500/60 transition-all"
+          />
         </div>
 
+        {/* Navigation Tabs Bar */}
+        <nav className="flex items-center gap-1 sm:gap-2 mt-3 pt-2 border-t border-zinc-800/60 overflow-x-auto scrollbar-none">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-150 ${
+                  isActive
+                    ? 'bg-amber-500 text-zinc-950 shadow-lg shadow-amber-500/20 font-bold'
+                    : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900'
+                }`}
+              >
+                <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : ''}`} />
+                <span>{item.label}</span>
+                {item.badge && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-black tracking-wider uppercase ${
+                      isActive ? 'bg-zinc-950 text-amber-400' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+                {typeof item.count === 'number' && item.count > 0 && (
+                  <span
+                    className={`px-1.5 py-0.2 rounded-full text-[11px] font-bold ${
+                      isActive ? 'bg-zinc-950 text-amber-400' : 'bg-amber-500/20 text-amber-400'
+                    }`}
+                  >
+                    {item.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
-    </div>
+    </header>
   );
 };

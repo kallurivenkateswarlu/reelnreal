@@ -1,99 +1,48 @@
-export type Language = 'en' | 'te';
+@import "tailwindcss";
 
-export type NavTab = 'movies' | 'boxoffice' | 'news' | 'history' | 'bookmarks';
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Telugu', sans-serif;
+  }
 
-export interface Movie {
-  id?: string | number;
-  title: string;
-  title_te?: string;
-  release: string;
-  category: string; // 'In theaters' | 'Upcoming' | 'OTT' | 'Top Hit'
-  genre: string;
-  genre_te?: string;
-  status: string;
-  status_te?: string;
-  reportType?: string;
-  reportType_te?: string;
-  platform?: string;
-  cast: string;
-  cast_te?: string;
-  director: string;
-  director_te?: string;
-  rating: string;
-  description: string;
-  description_te?: string;
-  collections: string;
-  collections_te?: string;
-  industry: string;
-  image: string;
-  trailerUrl?: string;
-  featured?: boolean;
+  h1, h2, .font-serif-display {
+    font-family: 'Cinzel', serif;
+  }
+
+  .font-telugu {
+    font-family: 'Noto Sans Telugu', sans-serif;
+  }
 }
 
-export interface NewsItem {
-  id?: string | number;
-  headline?: string;
-  headline_te?: string;
-  title?: string; // fallback
-  summary: string;
-  summary_te?: string;
-  category: string; // 'Political' | 'Local' | 'Industry' | 'National'
-  time?: string;
-  image?: string;
-  readTime?: string;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-export interface BoxOfficeItem {
-  id?: string | number;
-  title: string;
-  title_te?: string;
-  total: string;
-  status: string;
-  tag?: string;
-  url?: string;
-  apTsCollection?: string;
-  wwCollection?: string;
-  label?: string;
+::-webkit-scrollbar-track {
+  background: #09090b;
 }
 
-export interface FilmHistoryItem {
-  title: string;
-  title_te?: string;
-  release: string;
-  year: number;
-  category?: string;
-  genre: string;
-  genre_te?: string;
-  status?: string;
-  cast: string;
-  director: string;
-  rating: string;
-  description: string;
-  description_te?: string;
-  collections: string;
-  collections_te?: string;
-  image: string;
-  industry?: string;
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
 }
 
-export interface SiteContent {
-  movies: Movie[];
-  politicalNews: NewsItem[];
-  localNews: NewsItem[];
-  featuredStories: { title: string; tag: string; summary: string; image?: string }[];
-  boxOfficeLive: BoxOfficeItem[];
-  boxOfficeUpdates: { title: string; tag: string; summary: string }[];
-  topStories: { title: string; tag: string; summary: string }[];
-  boxOfficeTop5: { rank: number; title: string; collections: string; trend: string }[];
-  teluguFilmHistory: FilmHistoryItem[];
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
 }
 
-export interface WordPressConfig {
-  baseUrl: string;
-  username: string;
-  appPassword: string;
-  contentSource: 'json' | 'wordpress';
-  isConnected: boolean;
-  lastTested?: string;
-  error?: string;
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(18, 18, 22, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
