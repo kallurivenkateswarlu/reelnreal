@@ -1,205 +1,238 @@
-# Fix: "Site Does Not Support Application Password Authentication"
+# Quick Start: Connect WordPress to GitHub & Reel N Real
 
-## ❌ The Problem
-WordPress is rejecting authentication via application passwords. This prevents:
-- Connecting from GitHub
-- API access from external apps
-- Mobile app synchronization
-
-## ✅ Solution Steps
-
-### **STEP 1: Check WordPress Version (5 minutes)**
-
-1. Login to WordPress Admin: `https://your-wordpress-url.com/wp-admin`
-2. Go to **Dashboard** → Bottom right, check WordPress version
-3. **Required: WordPress 5.6 or higher**
-   - If older: Contact your hosting provider to upgrade
-
-### **STEP 2: Enable Application Passwords (10 minutes)**
-
-In WordPress Admin, follow this sequence:
-
-#### **2.1 Enable REST API**
-1. Go to **Settings** → **Permalinks**
-2. Select anything EXCEPT **"Plain"** (e.g., "Post name")
-3. Click **Save Changes**
-4. WordPress will regenerate `.htaccess`
-
-#### **2.2 Enable HTTPS (SSL Certificate)**
-1. Go to **Settings** → **General**
-2. Check both URLs start with `https://` (not `http://`)
-   - WordPress Address: `https://your-site.com`
-   - Site Address: `https://your-site.com`
-3. If still `http://`, you need to:
-   - **For Bluehost**: Dashboard → **SSL Certificate** → Enable free SSL
-   - Contact your hosting for help
-
-#### **2.3 Install & Activate Required Plugins**
-1. **Plugins** → **Add New**
-2. Search and install: **"Application Passwords"**
-3. If not available, install: **"REST API Authentication"**
-4. **Activate** the plugin
-
-#### **2.4 Enable Application Passwords in wp-config.php**
-1. Go to **Plugins** → **Code Snippets** (or install it)
-2. **Add New Snippet**
-3. Paste this code:
-
-```php
-<?php
-// Enable Application Passwords
-add_filter('wp_is_application_passwords_available', '__return_true');
-
-// Ensure REST API is enabled
-add_action('rest_api_init', function() {
-    // Enable REST API for all users
-    remove_filter('rest_pre_dispatch', 'rest_authentication_errors', 10);
-    add_filter('rest_authentication_errors', function($result) {
-        if (empty($result)) {
-            return true;
-        }
-        return $result;
-    }, 99);
-});
-?>
-```
-
-4. Click **Activate Snippet**
-
-### **STEP 3: Create Application Password (5 minutes)**
-
-1. Go to WordPress Admin
-2. **Users** → Your profile (e.g., "Administrator")
-3. Scroll down to **Application Passwords** section
-4. Enter name: `Reel N Real App`
-5. Click **Add New Application Password**
-6. You'll get a password like: `abc1 def2 ghi3 jkl4 mno5`
-7. **COPY THIS PASSWORD** (you won't see it again)
-
-### **STEP 4: Test REST API (5 minutes)**
-
-1. Open your browser
-2. Visit: `https://your-wordpress-url.com/wp-json/wp/v2/posts`
-3. Should see JSON data (list of posts)
-4. If error: Go to Step 2 and verify HTTPS & REST API enabled
-
-### **STEP 5: Test with cURL (Advanced)**
-
-Open terminal and run:
-
-```bash
-curl -u admin:abc1def2ghi3jkl4mno5 \
-  https://your-wordpress-url.com/wp-json/wp/v2/posts
-```
-
-Replace:
-- `admin` = your WordPress username
-- `abc1def2ghi3jkl4mno5` = your application password (no spaces)
-
-Should return JSON.
+## 🎯 Goal
+Connect your WordPress site to your GitHub repository and make the Reel N Real website pull content from WordPress instead of the JSON file.
 
 ---
 
-## 🔧 For Bluehost Customers
+## 📋 Prerequisites
 
-If you're on Bluehost:
+Before starting, you need:
+1. ✅ GitHub account logged in (kallurivenkateswarlu)
+2. ✅ WordPress site running (https://your-wordpress-domain.com)
+3. ✅ WordPress admin access
+4. ✅ This GitHub repo (reelnreal) cloned locally or access to edit files
 
-### **Bluehost-Specific Setup:**
+---
+
+## 🔧 Setup (15 minutes)
+
+### **Step 1: Fix WordPress (5 minutes)**
+
+In your WordPress Admin (`https://your-wordpress-domain.com/wp-admin`):
 
 1. **Enable HTTPS:**
-   - Bluehost Dashboard → **SSL Certificate**
-   - Click **Activate** (free)
-   - Wait 5 minutes for activation
+   - Settings → General
+   - Check both URLs start with `https://` (not `http://`)
+   - Update if needed and Save
 
-2. **Update WordPress:**
-   - Bluehost Dashboard → **Marketplace** → **WordPress Updates**
-   - Ensure you're on **WordPress 5.6+**
+2. **Enable REST API:**
+   - Settings → Permalinks
+   - Select "Post name" (NOT "Plain")
+   - Save Changes
 
-3. **Enable Application Passwords:**
-   - WordPress Admin → **Plugins** → **Add New**
-   - Search: "Application Passwords"
-   - Install & Activate
+3. **Install Plugins:**
+   - Plugins → Add New
+   - Search and install: "Application Passwords"
+   - Activate
 
-4. **Test REST API:**
-   - Visit: `https://your-site.com/wp-json`
-   - Should see API endpoints
+### **Step 2: Create Application Password (3 minutes)**
+
+In WordPress Admin:
+
+1. Users → Your Profile (e.g., "Administrator")
+2. Scroll to "Application Passwords"
+3. Enter name: `Reel N Real App`
+4. Click "Add New Application Password"
+5. **COPY the password** (looks like: `abc1 def2 ghi3 jkl4 mno5`)
+6. Save it somewhere safe
+
+### **Step 3: Update Configuration (5 minutes)**
+
+**Option A: Online (Easiest - if you can edit on GitHub)**
+
+1. Go to your GitHub repo: https://github.com/kallurivenkateswarlu/reelnreal
+2. Create a new file or edit `.env.local`:
+3. Fill in:
+   ```
+   CONTENT_SOURCE=wordpress
+   WP_API_URL=https://your-actual-wordpress-domain.com
+   WP_USERNAME=your_wordpress_username
+   WP_APP_PASSWORD=abc1def2ghi3jkl4mno5
+   ```
+4. Commit with message: "Configure WordPress connection"
+
+**Option B: Locally (If cloned to your computer)**
+
+1. Open the repo folder
+2. Copy `.env.example` to `.env.local`
+3. Edit `.env.local` with your details:
+   ```
+   CONTENT_SOURCE=wordpress
+   WP_API_URL=https://your-wordpress-domain.com
+   WP_USERNAME=your_wordpress_username
+   WP_APP_PASSWORD=abc1def2ghi3jkl4mno5
+   ```
+4. Save file (DO NOT COMMIT - add to .gitignore)
+5. For Netlify, add these as environment variables instead
 
 ---
 
-## 📋 Checklist
+## ✅ Test It Works
 
-- [ ] WordPress version is 5.6 or higher
-- [ ] HTTPS is enabled (URLs start with `https://`)
-- [ ] REST API is enabled (Permalinks not set to "Plain")
-- [ ] Application Passwords plugin installed
-- [ ] Application Password created for your user
-- [ ] REST API responds with JSON
-- [ ] Can authenticate with username + app password
+### **Test 1: Check REST API**
 
----
+Open your browser and visit:
+```
+https://your-wordpress-domain.com/wp-json/wp/v2/posts
+```
 
-## ❓ Still Getting Error?
+You should see JSON data. If error, re-do Step 1.
 
-### **Error: "This does not appear to be a valid WordPress installation"**
-- Your WordPress URL is incorrect
-- Try: `https://your-site.com/wp-json`
-- Should return JSON, not HTML error
+### **Test 2: Check Custom Post Types**
 
-### **Error: "REST API is disabled"**
-- Go to **Settings** → **Permalinks**
-- Change from "Plain" to anything else
-- Save
+Visit (after you add movies in WordPress):
+```
+https://your-wordpress-domain.com/wp-json/wp/v2/movies
+```
 
-### **Error: "Application Passwords not available"**
-- Your hosting doesn't support it yet
-- Contact support or try alternative: **JWT Authentication** plugin
+Should return empty array `[]` or list of movies.
 
-### **Error: "SSL Certificate error"**
-- Click link in error message to enable free SSL
-- Wait 5-15 minutes for activation
-- Try again
+### **Test 3: Add Sample Content**
+
+In WordPress Admin:
+
+1. Go to **Movies** → **Add New**
+2. Title: "Test Movie"
+3. Content: "This is a test"
+4. Publish
+5. Test API again in browser (should see the movie in JSON)
 
 ---
 
-## 🚀 Next Steps (After Fixing)
+## 🚀 Deploy to Production
 
-Once you can authenticate:
+### **If using Netlify:**
 
-1. Update `wordpress-api-config.js` with your real WordPress URL
-2. Set environment variables in Netlify
-3. Create sample content (movies, news, box office)
-4. Test the API fetch in your app
+1. Go to Netlify Dashboard: https://app.netlify.com
+2. Select your site (reelnreal)
+3. Go to **Site Settings** → **Build & Deploy** → **Environment**
+4. Click **Edit variables**
+5. Add these environment variables:
+   ```
+   WP_API_URL=https://your-wordpress-domain.com
+   WP_USERNAME=your_wordpress_username
+   WP_APP_PASSWORD=abc1def2ghi3jkl4mno5
+   CONTENT_SOURCE=wordpress
+   ```
+6. Click **Save**
+7. Go to **Deploys** → Click **Trigger deploy** → **Deploy site**
+8. Your site will now use WordPress content!
+
+### **If running locally:**
+
+```bash
+# Create .env.local file with your credentials
+cp .env.example .env.local
+# Edit .env.local with your WordPress details
+
+# Load environment variables and run your app
+export CONTENT_SOURCE=wordpress
+npm start
+# or
+npm run dev
+```
+
+---
+
+## 📱 Merge Multiple WordPress Accounts (If Needed)
+
+If you have 2 WordPress sites and want to consolidate:
+
+### **Option 1: Use the Better Site, Delete the Other**
+
+1. Login to both sites
+2. Choose which one you want to keep
+3. Update your GitHub config to point to the good one
+4. Delete the other site from your hosting (Bluehost dashboard)
+
+### **Option 2: Migrate Content Between Sites**
+
+1. From **Site A** (old): **Tools** → **Export** (export all content)
+2. To **Site B** (new): **Tools** → **Import** → **WordPress** (import the file)
+3. Now Site B has all content from Site A
+4. Update GitHub config to Site B
+5. Delete Site A
+
+---
+
+## 🐛 Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| "Site does not support app passwords" | See `WORDPRESS_TROUBLESHOOTING.md` |
+| API returns 404 | Check WordPress URL is correct & has `https://` |
+| API returns empty | Create sample content in WordPress first |
+| Changes not showing on website | Redeploy or wait for auto-deploy (5 min) |
+| Two WordPress sites | See "Merge Multiple Accounts" above |
+| Authentication error (401) | Verify username and app password are correct |
 
 ---
 
 ## 📞 Need Help?
 
-**Contact your hosting provider with this info:**
-- Site URL: `https://your-site.com`
-- Error: "Site does not support application password authentication"
-- Request: Enable application passwords & HTTPS
+**Check these files in your repo:**
 
-**Or use the simpler approach below:**
+1. **WORDPRESS_TROUBLESHOOTING.md** — Detailed error fixes
+2. **wordpress-api-config-v2.js** — Updated API config (handles auth)
+3. **.env.example** — Template for environment variables
+
+**If API still not working:**
+- Your WordPress domain: `________________`
+- Your WordPress username: `________________`
+- Error message: `________________`
+- Screenshot or exact error: `________________`
 
 ---
 
-## Simple Alternative: Use Basic Authentication
+## ✨ What Happens Next
 
-If Application Passwords still don't work, use Basic Authentication:
+Once connected:
 
-### **In your app code:**
+1. ✅ You can create/edit content in WordPress
+2. ✅ Changes appear on reelnreal.com automatically
+3. ✅ Use mobile WordPress app to update content anywhere
+4. ✅ Team members can edit content without touching code
+5. ✅ Content is cached for performance
 
-```javascript
-const username = 'your_username';
-const password = 'your_password';
-const auth = btoa(`${username}:${password}`);
+---
 
-fetch('https://your-wordpress-url.com/wp-json/wp/v2/posts', {
-  headers: {
-    'Authorization': `Basic ${auth}`,
-    'Content-Type': 'application/json'
-  }
-});
-```
+## 🎉 Success!
 
-⚠️ **Note:** Only use Basic Auth over HTTPS (which you have)
+Your WordPress + GitHub + Reel N Real setup is complete!
+
+**Next steps:**
+- [ ] Create sample movies in WordPress
+- [ ] Create sample news articles
+- [ ] Create box office entries
+- [ ] Test on your phone with WordPress app
+- [ ] Invite team members to WordPress
+- [ ] Update your actual content
+
+---
+
+## 📚 Files Reference
+
+| File | Purpose |
+|------|---------|
+| `.env.example` | Template for environment variables |
+| `.env.local` | Your local credentials (don't commit) |
+| `wordpress-api-config-v2.js` | API connection logic |
+| `content-fetcher.js` | Chooses between JSON or WordPress |
+| `QUICK_START.md` | This file |
+| `WORDPRESS_TROUBLESHOOTING.md` | Error solutions |
+| `WORDPRESS_INTEGRATION_STEPS.md` | Full setup guide |
+
+---
+
+Questions? Check the troubleshooting guide or contact support!
