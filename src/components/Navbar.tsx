@@ -31,25 +31,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const navItems = [
     {
-      id: 'movies' as NavTab,
-      label: isTe ? 'సినిమాలు' : 'Movies',
-      icon: Film,
-    },
-    {
-      id: 'boxoffice' as NavTab,
-      label: isTe ? 'బాక్స్ ఆఫీస్ లైవ్' : 'Box Office Live',
-      icon: TrendingUp,
-      badge: isTe ? 'లైవ్' : 'LIVE',
-    },
-    {
       id: 'news' as NavTab,
-      label: isTe ? 'వార్తలు' : 'News Hub',
+      label: isTe ? 'వార్తలు' : 'NEWS',
       icon: Newspaper,
     },
     {
-      id: 'history' as NavTab,
-      label: isTe ? 'తెలుగు సినీ చరిత్ర' : 'Film History',
-      icon: History,
+      id: 'movies' as NavTab,
+      label: isTe ? 'సినిమాలు' : 'MOVIES',
+      icon: Film,
     },
     {
       id: 'bookmarks' as NavTab,
@@ -63,13 +52,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800/80 shadow-2xl">
       {/* Live Ticker Bar */}
       <div className="bg-amber-500/10 border-b border-amber-500/20 py-1 px-4 text-xs font-medium text-amber-300 flex items-center justify-between overflow-hidden">
-        <div className="flex items-center gap-2 shrink-0 pr-4 bg-zinc-950/40 py-0.5 px-2 rounded font-bold uppercase tracking-wider text-[10px] text-amber-400">
-          <Flame className="w-3.5 h-3.5 animate-pulse text-amber-500" />
-          {isTe ? 'బాక్స్ ఆఫీస్ అప్‌డేట్' : 'BREAKING UPDATE'}
+        <div className="flex items-center gap-2 shrink-0 pr-4 bg-zinc-950/40 py-0.5 px-2 rounded font-bold uppercase tracking-wider text-[10px] text-red-400">
+          <Flame className="w-3.5 h-3.5 animate-pulse text-red-500" />
+          {isTe ? 'ఆఖరు వార్త' : 'BREAKING NEWS'}
         </div>
         <div className="overflow-hidden whitespace-nowrap w-full">
           <div className="inline-block animate-marquee pl-4">
-            {liveTickerText}
+            {isTe 
+              ? 'సమాచార కేంద్రానికి స్వాగతం: రాజకీయ, క్రీడ, సాంకేతిక, వినోదం' 
+              : 'Welcome to News Hub - Politics • Sports • Technology • Entertainment'}
           </div>
         </div>
       </div>
