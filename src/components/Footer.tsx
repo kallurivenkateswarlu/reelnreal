@@ -28,8 +28,8 @@ export const Footer: React.FC<FooterProps> = ({ language, setActiveTab }) => {
 
             <p className="text-xs text-zinc-400 max-w-md leading-relaxed">
               {isTe
-                ? 'తెలుగు సినీ పరిశ్రమ మరియు భారతీయ వినోద ప్రపంచం నుండి తాజా బాక్స్ ఆఫీస్ రిపోర్టులు, సమీక్షలు, వార్తలు మరియు క్లాసిక్ సినిమాల వేదిక.'
-                : 'The ultimate digital portal for Tollywood box office tracking, entertainment news, upcoming movie previews, and historical Indian cinema archives.'}
+                ? 'రాజకీయం, క్రీడలు, సాంకేతికత మరియు సినిమాలు - సమకాలీన వార్తలు, బాక్స్ ఆఫీస్ ట్రాకింగ్, మరియు టెలుగు సినీ చరిత్ర.'
+                : 'Breaking news on politics, sports, technology & entertainment, plus Tollywood box office tracking and Telugu cinema history.'}
             </p>
           </div>
 
