@@ -84,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               <p className="text-[10px] uppercase tracking-widest text-zinc-400 font-semibold -mt-1">
-                {isTe ? 'తెలుగు సినీ & వినోద వేదిక' : 'Cinema & Box Office Portal'}
+                {isTe ? 'వార్త • సినిమా • చరిత్ర' : 'News • Movies • Culture'}
               </p>
             </div>
           </div>
