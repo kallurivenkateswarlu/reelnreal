@@ -1,0 +1,44 @@
+﻿name: Sync Google Sheets to site-content.json
+
+on:
+  workflow_dispatch:
+    inputs:
+      sheet_id:
+        description: 'Google Sheet ID (from URL)'
+        required: true
+      tabs_json:
+        description: "JSON mapping of logical names to GIDs. Example: {\"MOVIES\":\"0\",\"POLITICAL_NEWS\":\"123456789\",... }"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run sheet sync
+        env:
+          SHEET_ID: ${{ github.event.inputs.sheet_id }}
+          TABS_JSON: ${{ github.event.inputs.tabs_json }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: 'main'
+        run: |
+          python scripts/build_site_content.py
+
+      - name: Commit and push site-content.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/site-content.json || true
+          if git diff --staged --name-only | grep . ; then
+            git commit -m "Auto-sync site-content.json from Google Sheets"
+            git push origin $BRANCH
+          else
+            echo "No changes to commit"
+          fi
