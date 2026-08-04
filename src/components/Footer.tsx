@@ -81,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({ language, setActiveTab }) => {
           <p className="flex items-center gap-1">
             <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <span>for Indian Cinema & Tollywood Fans</span>
+            <span>{isTe ? 'సమాచారం, సినిమా మరియు సంస్కృతి ప్రేమికుల కోసం' : 'for News, Movies & Culture Lovers'}</span>
           </p>
         </div>
       </div>
