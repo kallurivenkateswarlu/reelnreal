@@ -1,0 +1,16 @@
+{
+  "movies": [
+    {
+      "id": "movie-1",
+      "title": "Movie Title",
+      "description": "Movie description"
+    }
+  ],
+  "politicalNews": [],
+  "localNews": [],
+  "sportsNews": [],
+  "scienceTechNews": [],
+  "boxOfficeLive": [],
+  "boxOfficeTop5": [],
+  "teluguFilmHistory": []
+}
