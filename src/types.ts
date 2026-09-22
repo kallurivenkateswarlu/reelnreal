@@ -7,7 +7,7 @@ export interface Movie {
   title: string;
   title_te?: string;
   release: string;
-  category: string; // 'In theaters' | 'Upcoming' | 'OTT' | 'Top Hit'
+  category: string;
   genre: string;
   genre_te?: string;
   status: string;
@@ -22,25 +22,56 @@ export interface Movie {
   rating: string;
   description: string;
   description_te?: string;
+  content?: string;
+  content_te?: string;
   collections: string;
   collections_te?: string;
   industry: string;
-  image: string;
+  image?: string;
   trailerUrl?: string;
   featured?: boolean;
+  source?: string;
+  timestamp?: string;
 }
 
 export interface NewsItem {
   id?: string | number;
   headline?: string;
   headline_te?: string;
-  title?: string; // fallback
-  summary: string;
+  title?: string;
+  title_te?: string;
+  summary?: string;
   summary_te?: string;
-  category: string; // 'Political' | 'Local' | 'Industry' | 'National'
+  description?: string;
+  description_te?: string;
+  content?: string;
+  content_te?: string;
+  category: string;
   time?: string;
+  timestamp?: string;
   image?: string;
   readTime?: string;
+  source?: string;
+  author?: string;
+  featured?: boolean;
+}
+
+export interface ArticleRecord {
+  id: string;
+  title: string;
+  title_te?: string;
+  category: string;
+  categorySlug: string;
+  excerpt: string;
+  excerpt_te?: string;
+  content: string;
+  content_te?: string;
+  image?: string;
+  publishedAt: string;
+  author?: string;
+  source?: string;
+  type: 'movie' | 'news';
+  original: Movie | NewsItem;
 }
 
 export interface BoxOfficeItem {
@@ -80,6 +111,10 @@ export interface SiteContent {
   movies: Movie[];
   politicalNews: NewsItem[];
   localNews: NewsItem[];
+  sportsNews?: NewsItem[];
+  scienceTechNews?: NewsItem[];
+  businessNews?: NewsItem[];
+  entertainmentNews?: NewsItem[];
   featuredStories: { title: string; tag: string; summary: string; image?: string }[];
   boxOfficeLive: BoxOfficeItem[];
   boxOfficeUpdates: { title: string; tag: string; summary: string }[];
